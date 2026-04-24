@@ -8,9 +8,7 @@ import autoprefixer from "autoprefixer";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   css: {
     postcss: {
       plugins: [
@@ -21,18 +19,18 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "client/src"),
+      "@": path.resolve(__dirname, "src"),
       "@shared": path.resolve(__dirname, "shared"),
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
+  build: {
+    outDir: "dist/public",
+    emptyOutDir: true,
+  },
   server: {
     port: 5174,
     host: true,
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
@@ -43,17 +41,5 @@ export default defineConfig({
         ws: true,
       },
     },
-    hmr: false, // Отключаем HMR для middleware режима
-  },
-  optimizeDeps: {
-    // IMPORTANT: Prebundle CJS deps that are imported by ESM code.
-    // Otherwise Vite may serve them via /@fs/... and named exports will fail.
-    noDiscovery: false,
-    include: [
-      "react",
-      "react-dom",
-      "use-sync-external-store",
-      "use-sync-external-store/shim",
-    ],
   },
 });
