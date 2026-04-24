@@ -5,15 +5,15 @@ import viteConfig from "../vite.config";
 import fs from "fs";
 import path from "path";
 import { nanoid } from "nanoid";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const viteLogger = createLogger();
 
 export async function setupVite(server: Server, app: Express) {
   const port = parseInt(process.env.PORT || "3000", 10);
   const serverOptions = {
     middlewareMode: true,
-    // IMPORTANT: In middleware mode the Vite client must connect back to the
-    // same origin/port as the Express server, otherwise it defaults to 5173.
     hmr: false,
     allowedHosts: true as const,
   };
@@ -38,15 +38,21 @@ export async function setupVite(server: Server, app: Express) {
     const url = req.originalUrl;
 
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      // Ищем index.html в корне (на уровень выше папки server)
+      const clientTemplate = path.resolve(__dirname, "..", "index.html");
 
-      // always reload the index.html file from disk incase it changes
-      let template = await fs.promises.readFile(clientTemplate, "utf-8");
+      if (!fs.existsSync(clientTemplate)) {
+         // Если нет в корне, ищем в подпапке client
+         const fallbackTemplate = path.resolve(__dirname, "..", "client", "index.html");
+         if (!fs.existsSync(fallbackTemplate)) {
+            throw new Error(`Could not find index.html at ${clientTemplate} or ${fallbackTemplate}`);
+         }
+         var finalPath = fallbackTemplate;
+      } else {
+         var finalPath = clientTemplate;
+      }
+
+      let template = await fs.promises.readFile(finalPath, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,

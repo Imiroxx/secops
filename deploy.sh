@@ -14,15 +14,20 @@ apt install -y nodejs
 echo "Installing PM2..."
 npm install -g pm2
 
-# Clone the repository
-echo "Cloning repository..."
-rm -rf secops
-git clone https://github.com/Imiroxx/secops.git
-cd secops
+# Clone or Update the repository
+echo "Cloning or updating repository..."
+if [ -d "secops" ]; then
+    cd secops
+    git fetch --all
+    git reset --hard origin/main
+else
+    git clone https://github.com/Imiroxx/secops.git
+    cd secops
+fi
 
 # Install project dependencies
 echo "Installing project dependencies..."
-npm install
+npm install --include=dev
 
 # Setup Database
 echo "Setting up PostgreSQL..."
