@@ -26,12 +26,6 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
-  root: ".",
-  publicDir: "client/public",
-  build: {
-    outDir: "dist/public",
-    emptyOutDir: true,
-  },
   server: {
     port: 5174,
     host: true,
