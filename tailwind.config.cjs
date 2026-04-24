@@ -1,7 +1,8 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    "./client/**/*.{html,js,jsx,ts,tsx}",
+    "./index.html",
+    "./src/**/*.{html,js,jsx,ts,tsx}",
     "./shared/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
